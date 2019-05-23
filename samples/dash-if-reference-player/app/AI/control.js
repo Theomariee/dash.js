@@ -7,8 +7,11 @@ function setQuality(index){
     window.player.setQualityFor('video', index);
 }
 function getBufferLength(){
-    dashMetrics.getCurrentBufferLevel('video', true);
+    return dashMetrics.getCurrentBufferLevel('video', true);
 }
 function getQuality(){
-    window.player.getQualityFor('video');
+    return window.player.getQualityFor('video');
+}
+function emptyBuffer(){
+    return 0
 }
