@@ -607,7 +607,7 @@ app.controller('DashController', function ($scope, sources, contributors, dashif
         $scope.player.setTextDefaultEnabled($scope.initialSettings.textEnabled);
         $scope.player.enableForcedTextStreaming($scope.initialSettings.forceTextStreaming);
         $scope.controlbar.enable();
-        train();
+        setTimeout(function(){train()}, 5000);
     };
 
     $scope.doStop = function () {
