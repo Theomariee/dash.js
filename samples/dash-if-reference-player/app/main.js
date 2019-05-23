@@ -37,7 +37,10 @@ app.controller('DashController', function ($scope, sources, contributors, dashif
     $scope.selectedItem = {
         url: 'https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd'
     };
-
+    $scope.setRandomQuality = function () {
+        $scope.player.setQualityFor('video', Math.floor(Math.random() * 10));
+    };
+    
     sources.query(function (data) {
         $scope.availableStreams = data.items;
         // if no mss package, remove mss samples.
@@ -206,7 +209,7 @@ app.controller('DashController', function ($scope, sources, contributors, dashif
     $scope.localStorageSelected = true;
     $scope.jumpGapsSelected = true;
     $scope.fastSwitchSelected = true;
-    $scope.videoAutoSwitchSelected = true;
+    $scope.videoAutoSwitchSelected = false;
     $scope.videoQualities = [];
     $scope.ABRStrategy = 'abrDynamic';
 
@@ -978,4 +981,10 @@ function legendLabelClickHandler(obj) { /* jshint ignore:line */
     target.selected = !target.selected;
     scope.enableChartByName(id[1], id[0]);
     scope.safeApply();
+}
+function setRandomQuality(){
+    window.player.setQualityFor('video', Math.floor(Math.random() * 10));
+}
+function setQuality(index){
+    window.player.setQualityFor('video', index);
 }
