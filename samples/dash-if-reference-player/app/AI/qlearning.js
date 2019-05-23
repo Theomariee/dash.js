@@ -63,13 +63,17 @@ var NB_EPOCHS = 10
 var totalEpochs = 0
 var totalPenalities = 0
 
+var state = 0
+
 function train() {
+  console.log('[QLEARNING] Starting qLearning')
+
   initQTable()
 
   for(var i = 0; i < NB_EPOCHS; i++) {
-    emptyBuffer()
-  
-    var state = 0
+    console.log('[QLEARNING] Epoch number ' + i)
+    setQuality(0)
+    
     var next_state = null
     var done = false
     var action = null 
@@ -83,17 +87,24 @@ function train() {
       } else {
         action = getBestActionForState(state)
       }
-  
+      console.log('[QLEARNING] Action taken = '+ action)
+      console.log('[QLEARNING] Buffer Length = ' + getBufferLength())
+
       setAction(action)
   
-      next_state = findNextState(state, action);
-  
+      //Wait before findNextState
+      next_state = findNextState(state, action).then(() => {
+        console.log('[QLEARNING] findnextstate passé');
+      })
+      
       var next_max = getBestValueForState(next_state)
       
       var reward = m[state][action]
       
+      console.log('[QLEARNING] Modifying qTable');
       qTable[state][action] = 
           qTable[state][action] + alpha * (reward + gamma * next_max - qTable[state][action])
+      console.log('[QLEARNING]  qTable modified');
       
       if (reward < 0) {
         totalPenalities++
@@ -129,13 +140,20 @@ function initQTable() {
   } 
 }
 
-async function findNextState(state, action) {
-  await sleep(5000)
-  if (state == 0 && action == 0) return 0
-  if (state == 29 && action == 2) return 29
-  else {
-    return state + action - 1
+function findNextState(state, action) {
+  sleep(2000)
+  const bufferLength = getBufferLength()
+  console.log('[QLEARNING] Buffer length: ' + bufferLength)
+  var nextState = (Math.floor(state / 3) + action - 1) * 3
+
+  if (bufferLength > 13) {
+    nextState += 2
   }
+  else if(bufferLength > 7) {
+    nextState += 1
+  } 
+  console.log('[QLEARNING] Initial state: ' + state + ' Next state: ' + nextState)
+  return nextState
 }
 
 function getRandomInt(min, max) {
@@ -154,20 +172,25 @@ function getBestActionForState(state) {
 }
 
 function getBestValueForState(state) {
+  console.log('[QLEARNING] State to getBestValueForState: ' + state)
   return Math.max(qTable[state][0], qTable[state][1], qTable[state][2])
 }
 
 function setAction(action) {
   if(action == 0) {
-    console.log('[QLEARNING] Giving the order to upgrade quality')
+    console.log('[QLEARNING] Giving the order to downgrade quality')
     downgradeQuality()
   }
   else if(action == 2) {
-    console.log('[QLEARNING] Giving the order to downgrade quality')
+    console.log('[QLEARNING] Giving the order to upgrade quality')
     upgradeQuality()
   }
 }
 
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms))
+  const d = new Date()
+  const t = d.getTime()
+  while(t + ms > d.getTime()) {
+
+  }
 }

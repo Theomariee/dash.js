@@ -12,12 +12,12 @@ function getQuality(){
 }
 function upgradeQuality(){
     console.log('[QLEARNING] Upgrading quality')
-    if(getQuality() === 9)
-        setQuality(getQuality()-1)
+    if(getQuality() !== 9)
+        setQuality(getQuality()+1)
 }
 function downgradeQuality(){
     console.log('[QLEARNING] Downgrading quality')
-    if(getQuality() === 0)
+    if(getQuality() !== 0)
         setQuality(getQuality()-1)
 }
 function emptyBuffer(){
