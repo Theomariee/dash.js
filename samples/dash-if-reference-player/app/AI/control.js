@@ -12,6 +12,15 @@ function getBufferLength(){
 function getQuality(){
     return window.player.getQualityFor('video');
 }
+function upgradeQuality(){
+    if(getQuality() === 9)
+        setQuality(getQuality()-1)
+}
+function downgradeQuality(){
+    if(getQuality() === 0)
+        setQuality(getQuality()-1)
+}
 function emptyBuffer(){
-    return 0
+    // vider buffer
+    // quality = 0
 }
