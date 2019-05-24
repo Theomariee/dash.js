@@ -59,70 +59,58 @@ var epsilon = 0.1
 var min_epsilon = 0.01
 var max_epsilon = 1.0
 var decay_rate = 0.01
-var NB_EPOCHS = 10
 var totalEpochs = 0
 var totalPenalities = 0
 
 var state = 0
+initQTable()
+
+var done = false
+var action = null 
+var reward = null
+var next_max = null
+  var stateBuffer
 
 function train() {
   console.log('[QLEARNING] Starting qLearning')
-
-  initQTable()
-
-  for(var i = 0; i < NB_EPOCHS; i++) {
-    console.log('[QLEARNING] Epoch number ' + i)
-    setQuality(0)
-    
-    var done = false
-    var action = null 
-    var reward = null
-    var next_max = null
-  
-    var correctStreaks = 0
-    var errorStreaks = 0
-    
-    while(!done) {
-      if( Math.random() < epsilon ) {
-        action = getRandomInt(0, 2)
-      } else {
-        action = getBestActionForState(state)
-      }
-      console.log('[QLEARNING] Action taken = '+ action)
-      console.log('[QLEARNING] Buffer Length = ' + getBufferLength())
-
-      setAction(action)
-  
-      //Wait before findNextState
-      findNextState(state, action).then((next_state) => {
-        console.log('[QLEARNING] findNextState passé')
-
-        next_max = getBestValueForState(next_state)
-        reward = m[state][action]
-        console.log('[QLEARNING] Modifying qTable');
-        qTable[state][action] = 
-            qTable[state][action] + alpha * (reward + gamma * next_max - qTable[state][action])
-        console.log('[QLEARNING] qTable modified');
-        
-        if (reward < 0) {
-          totalPenalities++
-          errorStreaks++
-          correctStreaks = 0
-        } else {
-          correctStreaks++
-          errorStreaks = 0
-        }
-        
-        if((correctStreaks > 15 || errorStreaks > 15)) {
-          done = true
-        }
-        
-        state = next_state
-        totalEpochs++
-      })
-    } 
-    epsilon = min_epsilon + (max_epsilon - min_epsilon) * Math.exp(-0.1 * epsilon)
+  var bufferLength = getBufferLength()
+  var stateBuffer = 0
+  if (bufferLength > 13) {
+    stateBuffer = 2
   }
+  else if(bufferLength > 7) {
+    stateBuffer = 1
+  } 
+  stateBuffer
+	state = getQuality()*3 + stateBuffer
+
+	console.log('[QLEARNING] Epoch number ' + totalEpochs)
+    
+  if( Math.random() < epsilon ) {
+	action = getRandomInt(0, 2)
+  } else {
+	action = getBestActionForState(state)
+  }
+  console.log('[QLEARNING] Action taken = '+ action)
+  console.log('[QLEARNING] Buffer Length = ' + getBufferLength())
+
+  setAction(action)
+
+  //Wait before findNextState
+  var next_state = findNextState(state, action)
+	console.log('[QLEARNING] findNextState passé')
+
+	next_max = getBestValueForState(next_state)
+	reward = m[state][action]
+	console.log('[QLEARNING] Modifying qTable');
+	qTable[state][action] = 
+		qTable[state][action] + alpha * (reward + gamma * next_max - qTable[state][action])
+	console.log('[QLEARNING] qTable modified');
+
+	state = next_state
+	totalEpochs++
+	//epsilon = min_epsilon + (max_epsilon - min_epsilon) * Math.exp(-0.1 * epsilon)
+  
   console.log(qTable)
 }
 
@@ -139,8 +127,7 @@ function initQTable() {
   } 
 }
 
-async function findNextState(state, action) {
-  await timeout(1000)
+function findNextState(state, action) {
   const bufferLength = getBufferLength()
   console.log('[QLEARNING] Buffer length: ' + bufferLength)
   var nextState = (Math.floor(state / 3) + action - 1) * 3

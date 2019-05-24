@@ -820,6 +820,8 @@ app.controller('DashController', function ($scope, sources, contributors, dashif
     function updateMetrics(type) {
         var dashMetrics = $scope.player.getDashMetrics();
         var dashAdapter = $scope.player.getDashAdapter();
+        
+        train();
 
         if (dashMetrics && $scope.streamInfo) {
             var periodIdx = $scope.streamInfo.index;
